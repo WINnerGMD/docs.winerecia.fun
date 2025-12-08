@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String    @id @default(uuid())
+  username String    @unique
+  password String
+  sessions Session[]
+}
+
+model Session {
+  id        String   @id
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Group {
+  id       String    @id @default(uuid())
+  name     String
+  slug     String    @unique
+  order    Int       @default(0)
+  icon     String?   @default("Folder") // Название иконки из Lucide
+  articles Article[]
+}
+
+model Article {
+  id        String    @id @default(uuid())
+  title     String
+  slug      String    @unique
+  content   String    // Тут лежит HTML или JSON от редактора
+  published Boolean   @default(false)
+  
+  groupId   String?
+  group     Group?    @relation(fields: [groupId], references: [id])
+  
+  parentId  String?
+  parent    Article?  @relation("SubArticles", fields: [parentId], references: [id])
+  children  Article[] @relation("SubArticles")
+
+  order     Int       @default(0)
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}

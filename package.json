@@ -1,0 +1,36 @@
+{
+	"name": "wiki.winerecia.fun",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/kit": "^2.48.5",
+		"@sveltejs/vite-plugin-svelte": "^6.2.1",
+		"prisma": "5",
+		"sass": "^1.94.2",
+		"svelte": "^5.43.8",
+		"svelte-adapter-bun": "^1.0.1",
+		"vite": "^7.2.2"
+	},
+	"dependencies": {
+		"@libsql/client": "^0.15.15",
+		"@prisma/adapter-better-sqlite3": "^7.1.0",
+		"@prisma/adapter-libsql": "^7.1.0",
+		"@prisma/client": "5",
+		"@tiptap/core": "^3.13.0",
+		"@tiptap/extension-image": "^3.13.0",
+		"@tiptap/extension-text-align": "^3.13.0",
+		"@tiptap/extension-typography": "^3.13.0",
+		"@tiptap/pm": "^3.13.0",
+		"@tiptap/starter-kit": "^3.13.0",
+		"@tiptap/suggestion": "^3.13.0",
+		"lucide-svelte": "^0.556.0"
+	}
+}
