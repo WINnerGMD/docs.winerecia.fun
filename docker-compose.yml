@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: wiki-app
+    restart: always
+    ports:
+      - "3000:3000"
+    volumes:
+      # Чтобы база не стиралась при перезапуске
+      - ./prisma:/app/prisma
+    environment:
+      # Говорим приложению искать базу внутри контейнера
+      - DATABASE_URL="file:/app/prisma/dev.db"
+      - ORIGIN=http://localhost:3000
