@@ -10,5 +10,5 @@ services:
       - ./prisma:/app/prisma
     environment:
       # Говорим приложению искать базу внутри контейнера
-      - DATABASE_URL="file:/app/prisma/dev.db"
+      - DATABASE_URL=file:/app/prisma/dev.db
       - ORIGIN=http://localhost:3000
