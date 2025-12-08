@@ -1,4 +1,3 @@
-```javascript
 import { redirect } from '@sveltejs/kit';
 import { invalidateSession } from '$lib/server/auth';
 
@@ -11,4 +10,3 @@ export const actions = {
 		throw redirect(303, '/admin/login');
 	}
 };
-```
