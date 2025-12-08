@@ -1,21 +1,22 @@
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/db';
 import crypto from 'crypto';
+import { password } from 'bun';
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // Неделя жизни сессии
 
-export async function hashPassword(password) {
-  return await Bun.password.hash(password);
+export async function hashPassword(pwd) {
+  return await password.hash(pwd);
 }
 
-export async function verifyUser(username, password) {
+export async function verifyUser(username, pwd) {
   const user = await prisma.user.findUnique({
     where: { username }
   });
 
   if (!user) return null;
 
-  const valid = await Bun.password.verify(password, user.password);
+  const valid = await password.verify(pwd, user.password);
   if (!valid) return null;
 
   return user;

@@ -94,9 +94,53 @@
 		}
 	});
 
-	// ... onDestroy and addImage ...
+	// ... onDestroy ...
 
+	let fileInput;
+
+	function addImage() {
+		fileInput.click();
+	}
+
+	async function handleImageUpload(event) {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		const formData = new FormData();
+		formData.append('image', file);
+
+		try {
+			const response = await fetch('/api/upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				const { url } = await response.json();
+				if (url && editor) {
+					editor.chain().focus().setImage({ src: url }).run();
+				}
+			} else {
+				console.error('Upload failed');
+				alert('Ошибка при загрузке изображения');
+			}
+		} catch (e) {
+			console.error('Error uploading image:', e);
+			alert('Ошибка при загрузке изображения');
+		}
+
+		// Reset input
+		event.target.value = '';
+	}
 </script>
+
+	<input 
+		type="file" 
+		accept="image/*" 
+		style="display: none;" 
+		bind:this={fileInput} 
+		onchange={handleImageUpload} 
+	/>
 
 	<div class="editor-toolbar" class:disabled={!editor}>
 		<!-- Картинка -->

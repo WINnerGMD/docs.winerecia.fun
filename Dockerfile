@@ -21,7 +21,7 @@ COPY . .
 # Генерируем клиент базы и билдим SvelteKit
 ENV NODE_ENV=production
 RUN bunx prisma generate
-RUN bun run build
+RUN bun --bun run build
 
 # Финальный легкий образ
 FROM base AS release

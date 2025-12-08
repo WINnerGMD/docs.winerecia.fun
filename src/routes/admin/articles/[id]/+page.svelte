@@ -51,7 +51,21 @@
 			</div>
 			
 			<div class="actions">
-				<Button type="submit" size="lg" class="save-btn">Сохранить</Button>
+				<Button type="submit" size="lg" class="save-btn" formaction="?/update">Сохранить</Button>
+				<Button 
+					type="submit" 
+					variant="outline" 
+					size="lg" 
+					class="delete-btn" 
+					formaction="?/delete"
+					onclick={(e) => {
+						if (!confirm('Вы уверены, что хотите удалить эту статью?')) {
+							e.preventDefault();
+						}
+					}}
+				>
+					Удалить
+				</Button>
 			</div>
 		</div>
 
@@ -167,6 +181,10 @@
 
 	.save-btn {
 		width: 100%;
+	}
+
+	.delete-btn {
+		margin-left: 1rem;
 	}
 
 	.error-banner {

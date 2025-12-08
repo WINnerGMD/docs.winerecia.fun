@@ -54,10 +54,22 @@
 						<Button variant="ghost" size="sm" href="/admin/articles/{article.id}">
 							<Edit size={16} />
 						</Button>
-						<!-- Delete functionality to be implemented properly with form action -->
-						<Button variant="ghost" size="sm" class="danger">
-							<Trash2 size={16} />
-						</Button>
+						<form method="POST" action="?/delete" style="margin: 0;">
+							<input type="hidden" name="id" value={article.id} />
+							<Button 
+								variant="ghost" 
+								size="sm" 
+								class="danger"
+								type="submit"
+								onclick={(e) => {
+									if (!confirm('Вы уверены, что хотите удалить эту статью?')) {
+										e.preventDefault();
+									}
+								}}
+							>
+								<Trash2 size={16} />
+							</Button>
+						</form>
 					</div>
 				</div>
 			{/each}

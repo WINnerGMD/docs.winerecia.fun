@@ -21,7 +21,7 @@ export const load = async ({ locals, params }) => {
 };
 
 export const actions = {
-	default: async ({ request, locals, params }) => {
+	update: async ({ request, locals, params }) => {
 		requireAuth(locals);
 
 		const data = await request.formData();
@@ -59,6 +59,21 @@ export const actions = {
 		} catch (e) {
 			console.error(e);
 			return fail(500, { error: 'Ошибка при сохранении статьи' });
+		}
+
+		throw redirect(303, '/admin');
+	},
+
+	delete: async ({ locals, params }) => {
+		requireAuth(locals);
+
+		try {
+			await prisma.article.delete({
+				where: { id: params.id }
+			});
+		} catch (e) {
+			console.error(e);
+			return fail(500, { error: 'Ошибка при удалении статьи' });
 		}
 
 		throw redirect(303, '/admin');

@@ -12,7 +12,7 @@
 	<div class="admin-layout">
 		<aside class="sidebar">
 			<div class="sidebar-header">
-				<h2>Пишем статейки 1.0</h2>
+				<h2>Пишем статейки 2.4</h2>
 			</div>
 
 			<nav class="sidebar-nav">
