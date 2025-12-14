@@ -1,12 +1,12 @@
 import { redirect } from '@sveltejs/kit';
 import { prisma } from '$lib/server/db';
 import crypto from 'crypto';
-import { password } from 'bun';
+import argon2 from 'argon2';
 
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // Неделя жизни сессии
 
 export async function hashPassword(pwd) {
-  return await password.hash(pwd);
+  return await argon2.hash(pwd);
 }
 
 export async function verifyUser(username, pwd) {
@@ -16,7 +16,7 @@ export async function verifyUser(username, pwd) {
 
   if (!user) return null;
 
-  const valid = await password.verify(pwd, user.password);
+  const valid = await argon2.verify(user.password, pwd);
   if (!valid) return null;
 
   return user;

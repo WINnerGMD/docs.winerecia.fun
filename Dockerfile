@@ -1,37 +1,43 @@
-# Базовый образ с Bun
-FROM oven/bun:1 as base
+# Base image
+FROM node:22-alpine AS base
 WORKDIR /app
 
-# Устанавливаем зависимости (отдельно, чтобы кэшировалось)
-FROM base AS install
-RUN mkdir -p /temp/dev
-COPY package.json bun.lock /temp/dev/
-RUN cd /temp/dev && bun install
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Ставим только продакшн зависимости
-RUN mkdir -p /temp/prod
-COPY package.json bun.lock /temp/prod/
-RUN cd /temp/prod && bun install --production
-
-# Собираем проект
-FROM base AS prerelease
-COPY --from=install /temp/dev/node_modules node_modules
+# Rebuild the source code only when needed
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Генерируем клиент базы и билдим SvelteKit
 ENV NODE_ENV=production
-RUN bunx prisma generate
-RUN bun --bun run build
 
-# Финальный легкий образ
-FROM base AS release
-COPY --from=install /temp/prod/node_modules node_modules
-COPY --from=prerelease /app/node_modules/.prisma node_modules/.prisma
-COPY --from=prerelease /app/build build
-COPY --from=prerelease /app/package.json .
-COPY --from=prerelease /app/prisma prisma
+# Generate Prisma Client
+RUN npx prisma generate
 
-# Запускаем
-USER bun
-EXPOSE 3000/tcp
-ENTRYPOINT [ "bun", "run", "build/index.js" ]
+# Build SvelteKit app
+RUN npm run build
+RUN npm prune --production
+
+# Production image, copy all the files and run next
+FROM base AS runner
+ENV NODE_ENV=production
+
+# Create a non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 sveltekit
+
+USER sveltekit
+
+COPY --from=builder /app/build ./build
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/prisma ./prisma
+
+EXPOSE 3000
+
+ENV PORT=3000
+CMD ["node", "build/index.js"]

@@ -8,6 +8,8 @@ services:
     volumes:
       # Чтобы база не стиралась при перезапуске
       - ./prisma:/app/prisma
+      # Сохраняем загруженные картинки
+      - ./static/uploads:/app/build/client/uploads
     environment:
       # Говорим приложению искать базу внутри контейнера
       - DATABASE_URL=file:/app/prisma/dev.db
