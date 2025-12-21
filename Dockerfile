@@ -1,14 +1,18 @@
-# Base image
-FROM node:22-alpine AS base
+# Base image using Arch Linux
+FROM archlinux:base AS base
 WORKDIR /app
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
-COPY package.json package-lock.json ./
-RUN npm install
+# Update system and install dependencies
+# Arch is rolling, so we make sure we have latest nodejs, npm, and pnpm
+RUN pacman -Syu --noconfirm nodejs npm pnpm openssl
 
-# Rebuild the source code only when needed
+# Install dependencies
+FROM base AS deps
+COPY package.json ./
+# Install dependencies fresh to avoid lockfile issues
+RUN pnpm install
+
+# Rebuild the source code
 FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -16,20 +20,18 @@ COPY . .
 ENV NODE_ENV=production
 
 # Generate Prisma Client
-RUN npx prisma generate
+RUN pnpm prisma generate
 
 # Build SvelteKit app
-RUN npm run build
-RUN npm prune --production
+RUN pnpm run build
+RUN pnpm prune --prod
 
-# Production image, copy all the files and run next
+# Production image
 FROM base AS runner
 ENV NODE_ENV=production
 
 # Create a non-root user
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 sveltekit
-
+RUN useradd -m -s /bin/bash sveltekit
 USER sveltekit
 
 COPY --from=builder /app/build ./build
