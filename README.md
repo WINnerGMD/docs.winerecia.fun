@@ -3,7 +3,7 @@
 bun install
 bun run dev
 
-или 
+или s
 
 bun run build
 bun run preview
